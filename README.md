@@ -1,5 +1,21 @@
 # iOS-Programming-tips
 
+App Start-up sequence:
+
+When an app loads from a turned off device these states are fired:
+
+application:didFinishLaunchingWithOptions:
+applicationDidBecomeActive:
+After that if you press the Home button these states are fired:
+
+applicationWillResignActive:
+applicationDidEnterBackground:
+Then if you enter into the app again, the following will occur:
+
+applicationWillEnterForeground:
+applicationDidBecomeActive:
+Notice that the loading state only occurs once at the first load (but not after you return from a Home press). Now for every view the function viewDidLoad will be called only one time which is the first time this view was called. If call this view again (after it has been loaded) then the function viewWillAppear will be called instead. So usually refreshing occurs in viewWillAppear function.
+
 In general, this is what I do:
 
 1) ViewDidLoad - Whenever I'm adding controls to a view that should appear together with the view, right away, I put it in the ViewDidLoad method. Basically this method is called whenever the view was loaded into memory. So for example, if my view is a form with 3 labels, I would add the labels here; the view will never exist without those forms.
