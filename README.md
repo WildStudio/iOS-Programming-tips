@@ -28,3 +28,28 @@ In general, this is what I do:
 
 The #define is a pre-processor macro. That means that it basically goes through your code and replace your macro with what you've defined.
 If you use a const, it's going to be a pointer to the string in memory. It's way more efficient than having the same string being allocated wherever/whenever it is used.
+
+Modules
+
+A module offers a better way to work with system frameworks and libraries by replacing the preprocessor text inclusion mechanism with what Clang refers to as a semantic import. To import a module you use the @import declaration instead of the #include or #import preprocessor directives (note the semicolon):
+
+@import UIKit;
+When the compiler sees a module import it loads a standalone precompiled version of the framework. It also automatically takes care of linking to the module meaning you no longer need to manually add the framework in Xcode. Since the module is compiled just once there is no longer any advantage to including the framework header in prefix.pch. As a result the Precompile Prefix Header build setting now defaults to NO in Xcode.
+
+Using Modules
+
+Opting into using modules is as easy as setting the Apple LLVM 6.0 - Language - Modules Xcode build settings:
+
+Both the Enable Modules and Link Frameworks Automatically settings default to YES in new Xcode projects. In fact once modules are enabled any #import or #include directives are automatically converted to @import declarations. This means you can adopt modules without having to make source code changes. For example a header file that has old style preprocessor imports for UIKit and Core Data frameworks:
+
+#import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
+With modules enabled this is automatically mapped to import declarations:
+
+@import UIKit;
+@import CoreData;
+As a result of this automated conversion and the new Xcode defaults you may even be using modules without realising it if you have recently created a new project. One limitation of modules is that they are not available for user frameworks but the Apple system frameworks have been available as modules since iOS 7 (and OS X 10.9).
+
+Adding a Pre-Compiled Header to a Project
+
+Now that modules are available there is no need to continue to list system frameworks in a precompiled prefix header. If you need to add a prefix header to an Xcode project you can still do that (at least at time of writing with Xcode 6.1) by manually modifying the Precompile Prefix Header flag to YES and specifying the path in Prefix Header:
